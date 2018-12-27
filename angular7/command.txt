@@ -1,0 +1,151 @@
+step 1 : create new project by Angular CLI by "ng new application_name"
+step 2 : setup bootstrap in project used node command "npm install --save bootstrap@3"
+    - npm install --save bootstrap@3
+    - modify file angular.js
+        `
+            "styles": [
+                        "src/styles.css"
+                        ],
+        `
+                    TO
+        `
+            "styles": [
+                        "node_modules/bootstrap/dist/css/bootstrap.min.css",
+                        "src/styles.css"
+                        ],
+        `
+step 3: npm install --save font-awesome angular-font-awesome
+remove package : npm uninstall angular-font-awesome
+----
+ng g c recipes --spec false
+ng g c recipes/recipe-list --spec false
+ng g c recipes/recipe-detail --spec false
+ng g c recipes/recipe-list/recipe-item --spec false
+----
+
+command start angularJS application
+    - ng serve
+
+---- Fully Understanding the Component Selector
+    - @Component({selector:'app-servers'})  ===========> <app-server></app-server>
+    - @Component({selector:'[app-servers]'})  ===========> <div app-server></div>
+    - @Component({selector:'.app-servers'})  ===========> <div class="app-server"></div>
+
+-----
+
+What is Databinding?
+    it meaning communication between TypeScript Code(Business Logic) nad Template (HTML)
+        Output data 
+            String Interpolation ({{data}})
+                ==> {{'buttonStatus : '+enableForReset}}
+
+            Property Binding ([property]="data")
+        React to (User) Events
+
+            Event Binding ((event)="expression")
+                ==> (input) = "onUpdateStatusForReset($event)"
+                ==> (click)="onCreateUsername($event)"
+
+        Combination of Both : Two-Way-Binding([(ngModel)]="data")
+                ==> [(ngModel)]="userName"
+
+
+    About Style of component
+        [ngStyle]="{'backgroundColor': getColor()}" ====> Config css style for this element
+        [ngClass]="{online: serverStatus === 'online'}"
+            ====> Add Class for this element,Example if serverStatus has equal 'online' return true 
+                    {online: true} online is css class.
+
+    How to use Local  References of component
+        html ==> <div class="panel-heading" #heading>{{ name }}</div>
+        solution 1 : .ts ==>  @ViewChild('heading') header : ElementRef;
+        solution 2 : .html (click)="onAdd(heading)"
+
+    How to pass value from parent component to child component
+        Parent (app.component) .html ==> <app-server-element  [srvElement]="serverElement" >
+        Child (server-element.component) .ts : @Input('srvElement') element: { type: string, name: string, content: string };
+
+    How to return value from child component to parent
+            Child component :
+                    @Output() serverCreated = new EventEmitter<{ serverName: string, serverContent: string }>();
+                    onAddServer(nameInput : HTMLInputElement) {
+                        this.serverContentInput.nativeElement.value = '222222';    
+                        this.serverCreated.emit(
+                        {
+                            serverName:nameInput.value,
+                            serverContent:this.serverContentInput.nativeElement.value
+                        });
+                    }
+            Parent component :
+                <app-cockpit (serverCreated)="onServerAdded($event)" ></app-cockpit>
+                    serverElements = [{ type: 'server', name: 'Testserver', content: 'Just a test!' }];
+                    onServerAdded(serverData: { serverName: string, serverContent: string }) {
+                        this.serverElements.push({
+                        type: 'server',
+                        name: serverData.serverName,
+                        content: serverData.serverContent
+                        });
+                    }
+    How to get Local References on ng-content (ng-content used for send html element into component and render it on component)
+            Parent component :
+                <child-component><p #contentParagraph>data output</p></child-component>
+            Child component : 
+                @ContentChild('contentParagraph') contentParagraph:ElementRef;
+                console.log(''+this.contentParagraph.nativeElement.textContent)
+
+    
+-----------------------------
+    Advance case
+        <div class="bd-example">
+            <button (click)="onLogging()">Display button</button>
+            <p *ngIf="showSecret">show and </p>
+            <p 
+            [ngStyle]="{'backgroundColor':i < 4?'red':'blue'}" 
+            [ngClass]="{'morethan4': i >= 4}"
+            *ngFor="let logsitem of logs;let i = index">{{logsitem}}</p>
+        </div>
+        ----------------------------
+            <a href="#" class="list-group-item clearfix" *ngFor="let recipe of recipes">
+            <div class="pull-left">
+            <h4 class="list-group-item-heading">{{recipe.name}}</h4>
+            <p class="list-group-item-text">{{recipe.description}}</p>
+            </div>
+            <span class="pull-right">
+            <img 
+            [src] = "recipe.imagePath"
+            alt="{{recipe.name}}" 
+            class="img-responsive" 
+            style="max-height:50px;">
+            </span>
+        </a>
+
+          <!--src="{{recipe.imagePath}}"-->
+          <!-- [src] = "recipe.imagePath" -->
+
+        -----
+
+
+https://dzone.com/articles/understanding-output-and-eventemitter-in-angular
+
+https://www.c-sharpcorner.com/article/angular-one-and-two-way-data-bindings-with-examples/
+
+
+command generate directive
+ng g d better-highlight/better-highlight
+
+
+
+Directive
+<p appBetterHighlight [defaultColor] = "'yellow'" [hightlightColor] = "red" >Styleme with Better directive!</p>
+<p [appBetterHighlight] = "'red'" defaultColor = "yellow">Styleme with Better directive!</p>
+
+ - You can use name of selector to be aliasname of directive property 
+    
+    Directive metadata  ==> selector: '[appBetterHighlight]'
+    @Input('appBetterHighlight') hightlightColor : string = 'blue';
+
+    <p [appBetterHighlight] = "'red'" defaultColor = "yellow">Styleme with Better directive!</p>
+
+ - If you don't to specific parameter without single qoute "'" ,You much remove bracket "[" 
+    <p appBetterHighlight [defaultColor] = "'yellow'" [hightlightColor] = "red" >Styleme with Better directive!</p>
+    <p [appBetterHighlight] = "'red'" defaultColor = "yellow">Styleme with Better directive!</p>
